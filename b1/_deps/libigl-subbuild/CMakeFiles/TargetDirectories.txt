@@ -1,0 +1,3 @@
+/home/amal/foo/libigl-example-project/build/_deps/libigl-subbuild/CMakeFiles/rebuild_cache.dir
+/home/amal/foo/libigl-example-project/build/_deps/libigl-subbuild/CMakeFiles/edit_cache.dir
+/home/amal/foo/libigl-example-project/build/_deps/libigl-subbuild/CMakeFiles/libigl-populate.dir

@@ -1,0 +1,21 @@
+#include <igl/readOFF.h>
+#include <igl/opengl/glfw/Viewer.h>
+
+Eigen::MatrixXd V;
+Eigen::MatrixXi F;
+
+using namespace std ;
+
+int main(int argc, char *argv[])
+{
+  // Load a mesh in OFF format
+  if(argc>1)
+          igl::readOFF(argv[1],V,F);
+  else
+          igl::readOFF("mushroom.off",V,F);
+
+  // Plot the mesh
+  igl::opengl::glfw::Viewer viewer;
+  viewer.data().set_mesh(V,F);
+  viewer.launch();
+}

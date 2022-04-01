@@ -1,0 +1,11 @@
+/home/amal/foo/libigl-example-project/build/CMakeFiles/rebuild_cache.dir
+/home/amal/foo/libigl-example-project/build/CMakeFiles/example.dir
+/home/amal/foo/libigl-example-project/build/CMakeFiles/edit_cache.dir
+/home/amal/foo/libigl-example-project/build/glad/CMakeFiles/rebuild_cache.dir
+/home/amal/foo/libigl-example-project/build/glad/CMakeFiles/edit_cache.dir
+/home/amal/foo/libigl-example-project/build/glad/CMakeFiles/glad.dir
+/home/amal/foo/libigl-example-project/build/glfw/CMakeFiles/rebuild_cache.dir
+/home/amal/foo/libigl-example-project/build/glfw/CMakeFiles/edit_cache.dir
+/home/amal/foo/libigl-example-project/build/glfw/src/CMakeFiles/rebuild_cache.dir
+/home/amal/foo/libigl-example-project/build/glfw/src/CMakeFiles/edit_cache.dir
+/home/amal/foo/libigl-example-project/build/glfw/src/CMakeFiles/glfw.dir
