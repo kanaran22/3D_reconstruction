@@ -5,6 +5,7 @@
 #include <igl/writeOFF.h>
 #include <Eigen/Core>
 #include <typeinfo>
+#include <math.h>
 
 using namespace std ;
 using namespace Eigen ;
@@ -69,6 +70,7 @@ void scale(igl::opengl::glfw::Viewer &viewer,int index,float scl)
 {
   MatrixXd P = viewer.data(index).V ;
   MatrixXd avg = P.colwise().mean();
+  avg.row(0)[1] = 0;
   for (int i = 0; i < P.rows(); i += 1)
   {
     P.row(i) = avg + scl * (P.row(i) - avg);
@@ -97,4 +99,69 @@ MatrixXd VConcat(MatrixXd V1,MatrixXd V2)
   MatrixXd Out(V1.rows()+V2.rows(),V1.cols()) ;
   Out << V1 , V2 ;
   return Out ;
+}
+
+void saveMesh(igl::opengl::glfw::Viewer &viewer)
+{ 
+  MatrixXd Vt , Vt_1 , Vt_2 ;
+  MatrixXi Ft , Ft_1 , Ft_2 ;
+
+  int size = viewer.data_list.size() ;
+  int x ;
+
+  cout << endl << "Number of meshes in viewer : " << size << endl ;
+
+  Vt = viewer.data(1).V ;
+  Ft = viewer.data(1).F ;
+  for(int i=2;i<=size;i+=1)
+  {
+    Vt_1 = Vt ;
+    Vt_2 = viewer.data(i).V ;
+    x = Vt.rows() ;
+    Vt = VConcat(Vt_1,Vt_2) ;
+    // cout << endl << "New Rows Before 2nd Merge : " << x << endl ;
+    Ft_1 = Ft ;
+    Ft_2 = viewer.data(i).F ;
+    Ft = FConcat(Ft_1,Ft_2,x) ;
+  }
+  igl::writeOFF("OUTPUT.off",Vt,Ft);
+  igl::writeOBJ("OUTPUT.obj",Vt,Ft);
+}
+
+void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex) 
+{
+  MatrixXi Face ;
+  MatrixXd P_1 , P_2 , P_3 , Mid ;
+  // Plane angle calculation
+  float xa = P_2.row(0)[0] - P_1.row(0)[0];
+  float ya = P_2.row(0)[1] - P_1.row(0)[1];
+  float za = P_2.row(0)[2] - P_1.row(0)[2];
+  float xb = P_3.row(0)[0] - P_1.row(0)[0];
+  float yb = P_3.row(0)[1] - P_1.row(0)[1];
+  float zb = P_3.row(0)[2] - P_1.row(0)[2];
+
+  float xcoff = ya*zb - za*yb ;
+  float ycoff = za*xb - xa*zb;
+  float zcoff = xa*yb - ya*xb ;
+
+  float A = sqrt(pow(xcoff,2)+pow(ycoff,2)+pow(zcoff,2)) ;
+
+  float tx = xcoff / A ;
+  float ty = ycoff / A ;
+  float tz = zcoff / A ;
+  // Perform Rotation
+
+
+
+  // Translation
+  Face = viewer.data(1).F.row(faceIndex) ;
+  P_1 = viewer.data(1).V.row(Face.row(0)[0]) ;
+  P_2 = viewer.data(1).V.row(Face.row(0)[1]) ;
+  P_3 = viewer.data(1).V.row(Face.row(0)[2]) ;
+  Mid = (P_1+P_2+P_3) / 3 ;
+  // Perform Translation
+  translate(viewer,objectIndex,0,Mid.row(0)[0]) ;
+  translate(viewer,objectIndex,1,Mid.row(0)[1]) ;
+  translate(viewer,objectIndex,2,Mid.row(0)[2]) ;
+
 }

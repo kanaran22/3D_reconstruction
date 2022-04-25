@@ -17,6 +17,7 @@
         "specialfunctions": "cpp",
         "splines": "cpp",
         "main_bkp": "cpp",
-        "*.expression": "cpp"
+        "*.expression": "cpp",
+        "cmath": "cpp"
     }
 }

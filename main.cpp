@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
   viewer.load_mesh_from_file("cube.obj");
   viewer.load_mesh_from_file("cube.obj");
   viewer.load_mesh_from_file("star.off");
-
+  viewer.load_mesh_from_file("star.off");
 
 
   int i ;
@@ -61,44 +61,20 @@ int main(int argc, char *argv[])
   // for(i=0;i<10;i+=1)
   //   translate(viewer,4,1,0.05) ;
   scale(viewer,4,0.1) ;
-  
-  MatrixXi Face = viewer.data(1).F.row(0) ;
-  MatrixXd P_1 = viewer.data(1).V.row(Face.row(0)[0]) ;
-  MatrixXd P_2 = viewer.data(1).V.row(Face.row(0)[1]) ;
-  MatrixXd P_3 = viewer.data(1).V.row(Face.row(0)[2]) ;
-  MatrixXd Mid = (P_1+P_2+P_3) / 3 ;
-  translate(viewer,4,0,Mid.row(0)[0]) ;
-  translate(viewer,4,1,Mid.row(0)[1]) ;
-  translate(viewer,4,2,Mid.row(0)[2]) ;
+  scale(viewer,5,0.1) ;
+
+  placeObject(viewer,4,2) ;
+  placeObject(viewer,5,3) ;
 
   MatrixXd Vt_1 , Vt_2 ;
   MatrixXi Ft_1 , Ft_2 ;
   int x ;
-    
-  Vt_1 = viewer.data(1).V ;
-  Vt_2 = viewer.data(2).V ;
-  Vt = VConcat(Vt_1,Vt_2) ;
-  x = viewer.data(1).V.rows() ;
-  cout << endl << "New Rows Before 1st Merge : " << x << endl ;
-  // cout << endl << "New Rows Before 1st Merge : " << x << endl ;
-  Ft_1 = viewer.data(1).F ;
-  Ft_2 = viewer.data(2).F ;
-  Ft = FConcat(Ft_1,Ft_2,x) ;
 
-  Vt_1 = Vt ;
-  Vt_2 = viewer.data(3).V ;
-  x = Vt.rows() ;
-  Vt = VConcat(Vt_1,Vt_2) ;
-  cout << endl << "New Rows Before 2nd Merge : " << x << endl ;
-  Ft_1 = Ft ;
-  Ft_2 = viewer.data(3).F ;
-  Ft = FConcat(Ft_1,Ft_2,x) ;
+  int size = viewer.data_list.size() ;
 
-  igl::writeOFF("OUTPUT.off",Vt,Ft);
-  igl::writeOBJ("OUTPUT.obj",Vt,Ft);
+  cout << endl << "Number of meshes in viewer : " << size << endl ;
 
-
-
+  saveMesh(viewer) ;
 
   // Set mesh
   viewer.core().is_animating = true;
