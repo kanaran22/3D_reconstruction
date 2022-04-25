@@ -49,6 +49,7 @@ int main(int argc, char *argv[])
 
   viewer.load_mesh_from_file("cube.obj");
   viewer.load_mesh_from_file("cube.obj");
+  viewer.load_mesh_from_file("star.off");
 
 
 
@@ -57,7 +58,19 @@ int main(int argc, char *argv[])
     translate(viewer,1,0,-0.05) ;
   for(i=0;i<10;i+=1)
     translate(viewer,2,0,0.05) ;
+  // for(i=0;i<10;i+=1)
+  //   translate(viewer,4,1,0.05) ;
+  scale(viewer,4,0.1) ;
   
+  MatrixXi Face = viewer.data(1).F.row(0) ;
+  MatrixXd P_1 = viewer.data(1).V.row(Face.row(0)[0]) ;
+  MatrixXd P_2 = viewer.data(1).V.row(Face.row(0)[1]) ;
+  MatrixXd P_3 = viewer.data(1).V.row(Face.row(0)[2]) ;
+  MatrixXd Mid = (P_1+P_2+P_3) / 3 ;
+  translate(viewer,4,0,Mid.row(0)[0]) ;
+  translate(viewer,4,1,Mid.row(0)[1]) ;
+  translate(viewer,4,2,Mid.row(0)[2]) ;
+
   MatrixXd Vt_1 , Vt_2 ;
   MatrixXi Ft_1 , Ft_2 ;
   int x ;
@@ -66,14 +79,17 @@ int main(int argc, char *argv[])
   Vt_2 = viewer.data(2).V ;
   Vt = VConcat(Vt_1,Vt_2) ;
   x = viewer.data(1).V.rows() ;
+  cout << endl << "New Rows Before 1st Merge : " << x << endl ;
+  // cout << endl << "New Rows Before 1st Merge : " << x << endl ;
   Ft_1 = viewer.data(1).F ;
   Ft_2 = viewer.data(2).F ;
   Ft = FConcat(Ft_1,Ft_2,x) ;
 
   Vt_1 = Vt ;
   Vt_2 = viewer.data(3).V ;
-  Vt = VConcat(Vt_1,Vt_2) ;
   x = Vt.rows() ;
+  Vt = VConcat(Vt_1,Vt_2) ;
+  cout << endl << "New Rows Before 2nd Merge : " << x << endl ;
   Ft_1 = Ft ;
   Ft_2 = viewer.data(3).F ;
   Ft = FConcat(Ft_1,Ft_2,x) ;
@@ -105,32 +121,22 @@ int main(int argc, char *argv[])
     std::cout << key << " " << mod << "\n";
 
     if (key == 'Q')
-      P.row(i)[0] = (P.row(i)[0] + trans_scale);
+      translate(viewer,3,0,trans_scale) ;
     if (key == 'A')
-      P.row(i)[0] = (P.row(i)[0] - trans_scale);
+      translate(viewer,3,0,-trans_scale) ;
     if (key == 'W')
-      translate(viewer,0,1,trans_scale) ;
+      translate(viewer,3,1,trans_scale) ;
     if (key == 'S')
-      translate(viewer,0,1,-trans_scale) ;
+      translate(viewer,3,1,-trans_scale) ;
     if (key == 'E')
-      translate(viewer,0,2,trans_scale) ;
+      translate(viewer,3,2,trans_scale) ;
     if (key == 'D')
-      translate(viewer,0,2,-trans_scale) ;
+      translate(viewer,3,2,-trans_scale) ;
 
     if (key == '9')
-    {
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i) = avg + downscale * (P.row(i) - avg);
-      }
-    }
+      scale(viewer,3,upscale) ;
     if (key == '0')
-    {
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i) = avg + upscale * (P.row(i) - avg);
-      }
-    }
+      scale(viewer,3,downscale) ;
     if (key == 'Y')
     {
       theta = d_theta;
@@ -264,8 +270,8 @@ int main(int argc, char *argv[])
     cout << "Data size " << viewer.data_list.size() << endl;
     cout<< " Viewer: " << viewer.data_list.size() << "/" << viewer.selected_data_index << "\n";
 
-    viewer.data(Selected_mesh).set_mesh(P, F);
-    viewer.data(Selected_mesh).set_face_based(true);
+    // viewer.data(Selected_mesh).set_mesh(P, F);
+    // viewer.data(Selected_mesh).set_face_based(true);
   
     viewer.data().point_size = argc > 2 ? std::stoi(argv[2]) : 7;
 

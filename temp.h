@@ -44,7 +44,7 @@ void setup3D(igl::opengl::glfw::Viewer viewer)
   cout<< "viewer: " << viewer.data_list.size() << "/" << viewer.selected_data_index << "\n";
 }
 
-void translate(igl::opengl::glfw::Viewer viewer,int index,int direction,float translation)
+void translate(igl::opengl::glfw::Viewer &viewer,int index,int direction,float translation)
 {
   MatrixXd P = viewer.data(index).V ;
   for (int i = 0; i < P.rows(); i += 1)
@@ -55,14 +55,27 @@ void translate(igl::opengl::glfw::Viewer viewer,int index,int direction,float tr
   viewer.data(index).set_mesh(P,F);
   viewer.data(index).set_face_based(true);
 
-  cout << endl ;
-  cout << "Moved Object : " << index << endl ;
-  cout << "P" << endl ;
-  cout << P << endl ;
-  cout << "V" << endl ;
-  cout << viewer.data(index).V << endl ;
-  cout << "F" << endl ;
-  cout << viewer.data(index).F << endl ;
+  // cout << endl ;
+  // cout << "Moved Object : " << index << endl ;
+  // cout << "P" << endl ;
+  // cout << P << endl ;
+  // cout << "V" << endl ;
+  // cout << viewer.data(index).V << endl ;
+  // cout << "F" << endl ;
+  // cout << viewer.data(index).F << endl ;
+}
+
+void scale(igl::opengl::glfw::Viewer &viewer,int index,float scl)
+{
+  MatrixXd P = viewer.data(index).V ;
+  MatrixXd avg = P.colwise().mean();
+  for (int i = 0; i < P.rows(); i += 1)
+  {
+    P.row(i) = avg + scl * (P.row(i) - avg);
+  }
+  MatrixXi F = viewer.data(index).F ;
+  viewer.data(index).set_mesh(P,F);
+  viewer.data(index).set_face_based(true);
 }
 
 MatrixXi FConcat(MatrixXi F1,MatrixXi F2,int x = 10)
