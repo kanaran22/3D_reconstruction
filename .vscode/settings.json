@@ -16,6 +16,7 @@
         "openglsupport": "cpp",
         "specialfunctions": "cpp",
         "splines": "cpp",
-        "main_bkp": "cpp"
+        "main_bkp": "cpp",
+        "*.expression": "cpp"
     }
 }

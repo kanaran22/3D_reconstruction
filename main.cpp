@@ -5,32 +5,14 @@
 #include <Eigen/Core>
 #include <typeinfo>
 
+#include "temp.h"
+
 //#include <igl/MeshBooleanType.h>
 //#include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 
 using namespace std;
 using namespace Eigen ;
 
-MatrixXi FConcat(MatrixXi F1,MatrixXi F2,int x = 10)
-{
-  MatrixXi Temp(F2.rows(),F2.cols());
-  Temp << F2 ;
-  MatrixXi Points = (Eigen::MatrixXi(1, 3) << x , x , x ).finished().array() ;
-  for(int i=0;i<F2.rows();i+=1)
-  {
-    F2.row(i) += Points ;
-  }
-  MatrixXi Out(F1.rows()+F2.rows(),F1.cols()) ; 
-  Out << F1 , F2 ;
-  return Out ;
-}
-
-MatrixXd VConcat(MatrixXd V1,MatrixXd V2)
-{
-  MatrixXd Out(V1.rows()+V2.rows(),V1.cols()) ;
-  Out << V1 , V2 ;
-  return Out ;
-}
 
 int main(int argc, char *argv[])
 {
@@ -47,9 +29,6 @@ int main(int argc, char *argv[])
 
   Eigen::MatrixXd Vt;
   Eigen::MatrixXi Ft;
-  
-  // igl::readOFF("cube.off",VC,FC);
-  
 
   Eigen::MatrixXd V2; 
   Eigen::MatrixXi F2; 
@@ -65,58 +44,52 @@ int main(int argc, char *argv[])
   Eigen::MatrixXd P = V;
 
   int Selected_mesh=0;
-    viewer.data(Selected_mesh).set_mesh(P, F);
-    viewer.data(Selected_mesh).set_face_based(true);
+  viewer.data(Selected_mesh).set_mesh(P, F);
+  viewer.data(Selected_mesh).set_face_based(true);
 
   viewer.load_mesh_from_file("cube.obj");
+  viewer.load_mesh_from_file("cube.obj");
+
+
+
+  int i ;
+  for(i=0;i<10;i+=1)
+    translate(viewer,1,0,-0.05) ;
+  for(i=0;i<10;i+=1)
+    translate(viewer,2,0,0.05) ;
+  
+  MatrixXd Vt_1 , Vt_2 ;
+  MatrixXi Ft_1 , Ft_2 ;
+  int x ;
+    
+  Vt_1 = viewer.data(1).V ;
+  Vt_2 = viewer.data(2).V ;
+  Vt = VConcat(Vt_1,Vt_2) ;
+  x = viewer.data(1).V.rows() ;
+  Ft_1 = viewer.data(1).F ;
+  Ft_2 = viewer.data(2).F ;
+  Ft = FConcat(Ft_1,Ft_2,x) ;
+
+  Vt_1 = Vt ;
+  Vt_2 = viewer.data(3).V ;
+  Vt = VConcat(Vt_1,Vt_2) ;
+  x = Vt.rows() ;
+  Ft_1 = Ft ;
+  Ft_2 = viewer.data(3).F ;
+  Ft = FConcat(Ft_1,Ft_2,x) ;
+
+  igl::writeOFF("OUTPUT.off",Vt,Ft);
+  igl::writeOBJ("OUTPUT.obj",Vt,Ft);
+
+
+
 
   // Set mesh
   viewer.core().is_animating = true;
-  // Initialize point
-  // Eigen::MatrixXd P = (Eigen::MatrixXd(1,3)<<1.5,0,0).finished();
-  // function will be  called before every draw
-  // viewer.callback_mouse_down =
-  //  [&V,&F,&C](igl::opengl::glfw::Viewer& viewer, int, int)->bool
-  igl::MeshBooleanType boolean_type(igl::MESH_BOOLEAN_TYPE_UNION);
-  // cout << P.row(3)[0]<<'\n';
-  // XYZ Axis Generation
-  int R = 100;
-  int G = 100;
-  int B = 100;
-
-  const Eigen::MatrixXd P_ = (Eigen::MatrixXd(1, 3) << 0, 0, 0).finished();
-  const Eigen::MatrixXd P1 = (Eigen::MatrixXd(1, 3) << 1000, 0, 0).finished();
-  const Eigen::MatrixXd P2 = (Eigen::MatrixXd(1, 3) << -1000, 0, 0).finished();
-
-  const Eigen::MatrixXd P3 = (Eigen::MatrixXd(1, 3) << 0, 1000, 0).finished();
-  const Eigen::MatrixXd P4 = (Eigen::MatrixXd(1, 3) << 0, -1000, 0).finished();
-
-  const Eigen::MatrixXd P5 = (Eigen::MatrixXd(1, 3) << 0, 0, 1000).finished();
-  const Eigen::MatrixXd P6 = (Eigen::MatrixXd(1, 3) << 0, 0, -1000).finished();
-
-  cout<< "viewer: " << viewer.data_list.size() << "/" << viewer.selected_data_index << "\n";
-
-  //viewer.load_mesh_from_file("star.off");
-  // viewer.load_mesh_from_file("star.off");
-  // igl::readOFF("star.off", V2, F2);
-
-
-  viewer.data().add_points(P_,Eigen::RowVector3d(R,G,B));
-  R = 100;
-  G = 0;
-  B = 0;
-  viewer.data(0).add_edges(P1, P2, Eigen::RowVector3d(R, G, B));
-  R = 0;
-  G = 100;
-  B = 0;
-  viewer.data(0).add_edges(P3, P4, Eigen::RowVector3d(R, G, B));
-  R = 0;
-  G = 0;
-  B = 100;
-  viewer.data(0).add_edges(P5, P6, Eigen::RowVector3d(R, G, B));
   
-  cout<< "viewer: " << viewer.data_list.size() << "/" << viewer.selected_data_index << "\n";
+  igl::MeshBooleanType boolean_type(igl::MESH_BOOLEAN_TYPE_UNION);
 
+  setup3D(viewer) ;
 
   double theta = 0;
   double d_theta = 0.087;
@@ -130,36 +103,20 @@ int main(int argc, char *argv[])
   {
     // Create orbiting animation
     std::cout << key << " " << mod << "\n";
+
     if (key == 'Q')
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i)[0] = (P.row(i)[0] + trans_scale);
-      }
+      P.row(i)[0] = (P.row(i)[0] + trans_scale);
     if (key == 'A')
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i)[0] = (P.row(i)[0] - trans_scale);
-      }
+      P.row(i)[0] = (P.row(i)[0] - trans_scale);
     if (key == 'W')
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i)[1] = (P.row(i)[1] + trans_scale);
-      }
+      translate(viewer,0,1,trans_scale) ;
     if (key == 'S')
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i)[1] = (P.row(i)[1] - trans_scale);
-      }
+      translate(viewer,0,1,-trans_scale) ;
     if (key == 'E')
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i)[2] = (P.row(i)[2] + trans_scale);
-      }
-    if (key == 'C')
-      for (int i = 0; i < V.rows(); i += 1)
-      {
-        P.row(i)[2] = (P.row(i)[2] - trans_scale);
-      }
+      translate(viewer,0,2,trans_scale) ;
+    if (key == 'D')
+      translate(viewer,0,2,-trans_scale) ;
+
     if (key == '9')
     {
       for (int i = 0; i < V.rows(); i += 1)
@@ -302,49 +259,31 @@ int main(int argc, char *argv[])
       Selected_mesh++;
     }
 
+    cout << endl ;
     cout << "Selected Mesh : " << viewer.selected_data_index << endl;
     cout << "Data size " << viewer.data_list.size() << endl;
-    cout<< "viewer: " << viewer.data_list.size() << "/" << viewer.selected_data_index << "\n";
+    cout<< " Viewer: " << viewer.data_list.size() << "/" << viewer.selected_data_index << "\n";
 
     viewer.data(Selected_mesh).set_mesh(P, F);
     viewer.data(Selected_mesh).set_face_based(true);
-
-    // viewer.data().clear();
-    // viewer.data().add_points(P, Eigen::RowVector3d(0.0, 1.0, 0.0));
   
     viewer.data().point_size = argc > 2 ? std::stoi(argv[2]) : 7;
-    // viewer.core().orthographic = !(viewer.core().orthographic);
 
-    std::cout << P;
-    // viewer.data().set_points(P, Eigen::RowVector3d(1, 1, 1));
-    if( key == 'X')
+    if(key == 'X')
     {
       igl::writeOFF("OUTPUT.off",Vt,Ft);
       igl::writeOBJ("OUTPUT.obj",Vt,Ft);
     }
-
+    
     if(key == 'C')
     {
-      cout << "Viewer Data V : \n" ;
-      cout << viewer.data(t).V ;
-      cout << "\n"; 
-      cout << "Viewer Data  : \n" ;
-      cout << viewer.data(t).F ;
-      cout << "\n"; 
-      Vt = VConcat(viewer.data(1).V,viewer.data(2).V) ;
+      MatrixXd Vt_1 = viewer.data(1).V ;
+      MatrixXd Vt_2 = viewer.data(2).V ;
+      Vt = VConcat(Vt_1,Vt_2) ;
       int x = viewer.data(1).V.rows() ;
       MatrixXi Ft_1 = viewer.data(1).F ;
       MatrixXi Ft_2 = viewer.data(2).F ;
       Ft = FConcat(Ft_1,Ft_2,x) ;
-      string s = typeid(viewer.data(1).F).name();
-      cout << "Type of F : " << s << endl ;
-      s = typeid(viewer.data(1).V).name() ;
-      cout << "Type of V : " << s << endl ;
-      cout << endl ;
-      cout << "Concatenated V : " << endl ;
-      cout << Vt << endl ;
-      cout << "Concatenated F : " << endl ;
-      cout << Ft << endl ;
     }
 
     return false;
