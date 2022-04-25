@@ -80,6 +80,66 @@ void scale(igl::opengl::glfw::Viewer &viewer,int index,float scl)
   viewer.data(index).set_face_based(true);
 }
 
+void Rotate(igl::opengl::glfw::Viewer &viewer,int objectIndex,int direction,float d_theta)
+{
+  MatrixXd P = viewer.data(objectIndex).V;
+  double theta = d_theta;
+  switch(direction)
+  {
+    case 0 : for (int i = 0; i < P.rows(); ++i)
+            {
+              double x = P(i, 0);
+              double y = P(i, 1);
+              double z = P(i, 2);
+              double x_, y_, z_;
+
+              x_ = P(i, 0);
+              y_ = (y * cos(theta) - z * sin(theta));
+              z_ = (y * sin(theta) + z * cos(theta));
+
+              P(i, 0) = x_;
+              P(i, 1) = y_;
+              P(i, 2) = z_;
+            }
+            break ;
+    case 1 :for (int i = 0; i < P.rows(); ++i)
+            {
+              double x = P(i, 0);
+              double y = P(i, 1);
+              double z = P(i, 2);
+              double x_, y_, z_;
+
+              x_ = (x * cos(theta) + z * sin(theta));
+              y_ = P(i, 1);
+              z_ = (z * cos(theta) - x * sin(theta));
+
+              P(i, 0) = x_;
+              P(i, 1) = y_;
+              P(i, 2) = z_;
+            }
+            break ;
+    case 2 :for (int i = 0; i < P.rows(); ++i)
+            {
+              double x = P(i, 0);
+              double y = P(i, 1);
+              double x_, y_, z_;
+
+              x_ = (x * cos(theta) - y * sin(theta));
+              y_ = (y * cos(theta) + x * sin(theta));
+              z_ = P(i, 2);
+
+              P(i, 0) = x_;
+              P(i, 1) = y_;
+              P(i, 2) = z_;
+            }
+            break ;
+    default: break ;
+  }
+  MatrixXi F = viewer.data(objectIndex).F ;
+  viewer.data(objectIndex).set_mesh(P,F);
+  viewer.data(objectIndex).set_face_based(true);
+}
+
 MatrixXi FConcat(MatrixXi F1,MatrixXi F2,int x = 10)
 {
   MatrixXi Temp(F2.rows(),F2.cols());
@@ -132,6 +192,13 @@ void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
 {
   MatrixXi Face ;
   MatrixXd P_1 , P_2 , P_3 , Mid ;
+
+  // Getting Points
+  Face = viewer.data(1).F.row(faceIndex) ;
+  P_1 = viewer.data(1).V.row(Face.row(0)[0]) ;
+  P_2 = viewer.data(1).V.row(Face.row(0)[1]) ;
+  P_3 = viewer.data(1).V.row(Face.row(0)[2]) ;
+
   // Plane angle calculation
   float xa = P_2.row(0)[0] - P_1.row(0)[0];
   float ya = P_2.row(0)[1] - P_1.row(0)[1];
@@ -149,17 +216,21 @@ void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   float tx = xcoff / A ;
   float ty = ycoff / A ;
   float tz = zcoff / A ;
+  float pi2 = acos(0.0);
+
+  cout << endl ;
+  cout << "Calculated Angles " << endl ; 
+  cout << "X : " << acos(tx) << endl ;
+  cout << "Y : " << acos(ty) << endl ;
+  cout << "Z : " << acos(tz) << endl ;
+
   // Perform Rotation
+  Rotate(viewer,objectIndex,0,acos(tx)) ;
+  Rotate(viewer,objectIndex,1,pi2-acos(ty)) ;
+  Rotate(viewer,objectIndex,2,pi2-acos(tz)) ;
 
-
-
-  // Translation
-  Face = viewer.data(1).F.row(faceIndex) ;
-  P_1 = viewer.data(1).V.row(Face.row(0)[0]) ;
-  P_2 = viewer.data(1).V.row(Face.row(0)[1]) ;
-  P_3 = viewer.data(1).V.row(Face.row(0)[2]) ;
-  Mid = (P_1+P_2+P_3) / 3 ;
   // Perform Translation
+  Mid = (P_1+P_2+P_3) / 3 ;
   translate(viewer,objectIndex,0,Mid.row(0)[0]) ;
   translate(viewer,objectIndex,1,Mid.row(0)[1]) ;
   translate(viewer,objectIndex,2,Mid.row(0)[2]) ;

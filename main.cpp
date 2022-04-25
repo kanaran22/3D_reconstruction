@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
   scale(viewer,4,0.1) ;
   scale(viewer,5,0.1) ;
 
-  placeObject(viewer,4,2) ;
+  placeObject(viewer,4,1) ;
   placeObject(viewer,5,3) ;
 
   MatrixXd Vt_1 , Vt_2 ;
@@ -113,118 +113,19 @@ int main(int argc, char *argv[])
       scale(viewer,3,upscale) ;
     if (key == '0')
       scale(viewer,3,downscale) ;
+
     if (key == 'Y')
-    {
-      theta = d_theta;
-      for (int i = 0; i < V.rows(); ++i)
-      {
-        double x = P(i, 0);
-        double y = P(i, 1);
-        double x_, y_, z_;
-
-        x_ = (x * cos(theta) - y * sin(theta)) - avg(0) ;
-        y_ = (y * cos(theta) + x * sin(theta)) - avg(1) ;
-        z_ = P(i, 2);
-
-        P(i, 0) = x_;
-        P(i, 1) = y_;
-        P(i, 2) = z_;
-      }
-    }
+      Rotate(viewer,3,0,d_theta) ;
     if (key == 'U')
-    {
-      theta = -(d_theta);
-      for (int i = 0; i < V.rows(); ++i)
-      {
-        double x = P(i, 0);
-        double y = P(i, 1);
-        double x_, y_, z_;
-
-        x_ = (x * cos(theta) - y * sin(theta)) - avg(0);
-        y_ = (y * cos(theta) + x * sin(theta)) - avg(1);
-        z_ = P(i, 2);
-
-        P(i, 0) = x_;
-        P(i, 1) = y_;
-        P(i, 2) = z_;
-      }
-    }
+      Rotate(viewer,3,0,-d_theta) ;
     if (key == 'H')
-    {
-      theta = d_theta;
-      for (int i = 0; i < V.rows(); ++i)
-      {
-        double x = P(i, 0);
-        double y = P(i, 1);
-        double z = P(i, 2);
-        double x_, y_, z_;
-
-        x_ = (x * cos(theta) + z * sin(theta)) - avg(0);
-        y_ = P(i, 1);
-        z_ = (z * cos(theta) - x * sin(theta)) - avg(2);
-
-        P(i, 0) = x_;
-        P(i, 1) = y_;
-        P(i, 2) = z_;
-      }
-    }
+      Rotate(viewer,3,1,d_theta) ;
     if (key == 'J')
-    {
-      theta = -(d_theta);
-      for (int i = 0; i < V.rows(); ++i)
-      {
-        double x = P(i, 0);
-        double y = P(i, 1);
-        double z = P(i, 2);
-        double x_, y_, z_;
-
-        x_ = (x * cos(theta) + z * sin(theta)) - avg(0);
-        y_ = P(i, 1);
-        z_ = (z * cos(theta) - x * sin(theta)) - avg(2);
-
-        P(i, 0) = x_;
-        P(i, 1) = y_;
-        P(i, 2) = z_;
-      }
-    }
+      Rotate(viewer,3,1,-d_theta) ;
     if (key == 'N')
-    {
-      theta = d_theta;
-      for (int i = 0; i < V.rows(); ++i)
-      {
-        double x = P(i, 0);
-        double y = P(i, 1);
-        double z = P(i, 2);
-        double x_, y_, z_;
-
-        x_ = P(i, 0);
-        y_ = (y * cos(theta) - z * sin(theta)) - avg(1);
-        z_ = (y * sin(theta) + z * cos(theta)) - avg(2);
-
-        P(i, 0) = x_;
-        P(i, 1) = y_;
-        P(i, 2) = z_;
-      }
-    }
+      Rotate(viewer,3,2,d_theta) ;
     if (key == 'M')
-    {
-      theta = -(d_theta);
-      for (int i = 0; i < V.rows(); ++i)
-      {
-        double x = P(i, 0);
-        double y = P(i, 1);
-        double z = P(i, 2);
-        double x_, y_, z_;
-
-        x_ = P(i, 0);
-        y_ = (y * cos(theta) - z * sin(theta)) - avg(1);
-        z_ = (y * sin(theta) + z * cos(theta)) - avg(2);
-
-        P(i, 0) = x_;
-        P(i, 1) = y_;
-        P(i, 2) = z_;
-      }
-    }
+      Rotate(viewer,3,2,-d_theta) ;
 
     if (key == '1')
     {
