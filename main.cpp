@@ -51,6 +51,8 @@ int main(int argc, char *argv[])
   viewer.load_mesh_from_file("cube.obj");
   viewer.load_mesh_from_file("star.off");
   viewer.load_mesh_from_file("star.off");
+  viewer.load_mesh_from_file("star.off");
+  viewer.load_mesh_from_file("star.off");
 
 
   int i ;
@@ -62,9 +64,13 @@ int main(int argc, char *argv[])
   //   translate(viewer,4,1,0.05) ;
   scale(viewer,4,0.1) ;
   scale(viewer,5,0.1) ;
+  scale(viewer,6,0.1) ;
+  scale(viewer,7,0.1) ;
 
   placeObject(viewer,4,1) ;
   placeObject(viewer,5,3) ;
+  placeObject(viewer,6,11) ;
+  placeObject(viewer,7,t) ;
 
   MatrixXd Vt_1 , Vt_2 ;
   MatrixXi Ft_1 , Ft_2 ;

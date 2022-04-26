@@ -225,9 +225,9 @@ void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   cout << "Z : " << acos(tz) << endl ;
 
   // Perform Rotation
-  Rotate(viewer,objectIndex,0,acos(tx)) ;
+  Rotate(viewer,objectIndex,0,(pi2*2)-acos(tx)) ;
   Rotate(viewer,objectIndex,1,pi2-acos(ty)) ;
-  Rotate(viewer,objectIndex,2,pi2-acos(tz)) ;
+  Rotate(viewer,objectIndex,2,acos(tz)) ;
 
   // Perform Translation
   Mid = (P_1+P_2+P_3) / 3 ;
