@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
   viewer.data(Selected_mesh).set_mesh(P, F);
   viewer.data(Selected_mesh).set_face_based(true);
 
-  viewer.load_mesh_from_file("cube.obj");
-  viewer.load_mesh_from_file("cube.obj");
+  viewer.load_mesh_from_file("branchnew.off");
+
   viewer.load_mesh_from_file("star.off");
   viewer.load_mesh_from_file("star.off");
   viewer.load_mesh_from_file("star.off");
@@ -62,15 +62,15 @@ int main(int argc, char *argv[])
     translate(viewer,2,0,0.05) ;
   // for(i=0;i<10;i+=1)
   //   translate(viewer,4,1,0.05) ;
-  scale(viewer,4,0.1) ;
-  scale(viewer,5,0.1) ;
-  scale(viewer,6,0.1) ;
-  scale(viewer,7,0.1) ;
+  for(int i=0;i<4;i+=1)
+  {
+    scale(viewer,3+i,0.01) ;
+  }
 
-  placeObject(viewer,4,1) ;
-  placeObject(viewer,5,3) ;
-  placeObject(viewer,6,11) ;
-  placeObject(viewer,7,t) ;
+  placeObject(viewer,3,5) ;
+  placeObject(viewer,4,6) ;
+  placeObject(viewer,5,7) ;
+  placeObject(viewer,6,t) ;
 
   MatrixXd Vt_1 , Vt_2 ;
   MatrixXi Ft_1 , Ft_2 ;
@@ -103,35 +103,35 @@ int main(int argc, char *argv[])
     std::cout << key << " " << mod << "\n";
 
     if (key == 'Q')
-      translate(viewer,3,0,trans_scale) ;
+      translate(viewer,2,0,trans_scale) ;
     if (key == 'A')
-      translate(viewer,3,0,-trans_scale) ;
+      translate(viewer,2,0,-trans_scale) ;
     if (key == 'W')
-      translate(viewer,3,1,trans_scale) ;
+      translate(viewer,2,1,trans_scale) ;
     if (key == 'S')
-      translate(viewer,3,1,-trans_scale) ;
+      translate(viewer,2,1,-trans_scale) ;
     if (key == 'E')
-      translate(viewer,3,2,trans_scale) ;
+      translate(viewer,2,2,trans_scale) ;
     if (key == 'D')
-      translate(viewer,3,2,-trans_scale) ;
+      translate(viewer,2,2,-trans_scale) ;
 
     if (key == '9')
-      scale(viewer,3,upscale) ;
+      scale(viewer,2,upscale) ;
     if (key == '0')
-      scale(viewer,3,downscale) ;
+      scale(viewer,2,downscale) ;
 
     if (key == 'Y')
-      Rotate(viewer,3,0,d_theta) ;
+      Rotate(viewer,2,0,d_theta) ;
     if (key == 'U')
-      Rotate(viewer,3,0,-d_theta) ;
+      Rotate(viewer,2,0,-d_theta) ;
     if (key == 'H')
-      Rotate(viewer,3,1,d_theta) ;
+      Rotate(viewer,2,1,d_theta) ;
     if (key == 'J')
-      Rotate(viewer,3,1,-d_theta) ;
+      Rotate(viewer,2,1,-d_theta) ;
     if (key == 'N')
-      Rotate(viewer,3,2,d_theta) ;
+      Rotate(viewer,2,2,d_theta) ;
     if (key == 'M')
-      Rotate(viewer,3,2,-d_theta) ;
+      Rotate(viewer,2,2,-d_theta) ;
 
     if (key == '1')
     {

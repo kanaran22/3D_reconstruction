@@ -214,20 +214,34 @@ void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   float A = sqrt(pow(xcoff,2)+pow(ycoff,2)+pow(zcoff,2)) ;
 
   float tx = xcoff / A ;
+  tx = acos(tx);
   float ty = ycoff / A ;
+  ty = acos(ty);
   float tz = zcoff / A ;
+  tz = acos(tz);
+
+  float txy = sqrt(pow(xcoff,2)+pow(ycoff,2))/A ;
+  txy = acos(txy) ;
+  float tyz = sqrt(pow(ycoff,2)+pow(zcoff,2))/A ;
+  tyz = acos(tyz) ;
+  float tzx = sqrt(pow(zcoff,2)+pow(xcoff,2))/A ;
+  tzx = acos(tzx) ;
+  
+
   float pi2 = acos(0.0);
+  float pi = pi2 * 2;
+  float pi4 = pi2 / 2 ;
 
   cout << endl ;
   cout << "Calculated Angles " << endl ; 
-  cout << "X : " << acos(tx) << endl ;
-  cout << "Y : " << acos(ty) << endl ;
-  cout << "Z : " << acos(tz) << endl ;
+  cout << "X : " << tx << endl ;
+  cout << "Y : " << ty << endl ;
+  cout << "Z : " << tz << endl ;
 
   // Perform Rotation
-  Rotate(viewer,objectIndex,0,(pi2*2)-acos(tx)) ;
-  Rotate(viewer,objectIndex,1,pi2-acos(ty)) ;
-  Rotate(viewer,objectIndex,2,acos(tz)) ;
+  Rotate(viewer,objectIndex,0,tyz) ;
+  Rotate(viewer,objectIndex,1,tzx) ;
+  Rotate(viewer,objectIndex,2,txy) ;
 
   // Perform Translation
   Mid = (P_1+P_2+P_3) / 3 ;
