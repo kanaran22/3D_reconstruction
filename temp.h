@@ -10,6 +10,24 @@
 using namespace std ;
 using namespace Eigen ;
 
+void tempRotate(igl::opengl::glfw::Viewer viewer,int objectIndex,RowVector3d v,double theta)
+{
+  MatrixXd V = viewer.data(objectIndex).V ;
+  Quaterniond q(AngleAxisd(theta,v)) ;
+  cout << endl ;
+  cout << "Temp Rotate" << endl ;
+  cout << "v : " << v << endl ;
+  cout << "theta : " << theta << endl ;
+  cout << "Q : " << q << endl ;
+  // cout << q << endl ;
+  // cout << "V" << endl ;
+  // cout << V ;
+  // V = q * V ;
+  MatrixXi F = viewer.data(objectIndex).F ;
+
+  viewer.data(objectIndex).set_mesh(V,F) ;
+}
+
 void setup3D(igl::opengl::glfw::Viewer viewer)
 {
   int R = 100;
@@ -188,7 +206,7 @@ void saveMesh(igl::opengl::glfw::Viewer &viewer)
   igl::writeOBJ("OUTPUT.obj",Vt,Ft);
 }
 
-void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex) 
+bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex) 
 {
   MatrixXi Face ;
   MatrixXd P_1 , P_2 , P_3 , Mid ;
@@ -210,6 +228,12 @@ void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   float xcoff = ya*zb - za*yb ;
   float ycoff = za*xb - xa*zb;
   float zcoff = xa*yb - ya*xb ;
+  
+  if(!(xcoff>0&&ycoff>0&&zcoff>0))
+  {
+    cout << "Returning False" <<endl ;
+    return false ;
+  }
 
   float A = sqrt(pow(xcoff,2)+pow(ycoff,2)+pow(zcoff,2)) ;
 
@@ -227,10 +251,16 @@ void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   float tzx = sqrt(pow(zcoff,2)+pow(xcoff,2))/A ;
   tzx = acos(tzx) ;
   
+  float tsz = ycoff / sqrt(pow(xcoff,2)+pow(ycoff,2)) ;
+  tsz = asin(tsz) ;
 
   float pi2 = acos(0.0);
   float pi = pi2 * 2;
   float pi4 = pi2 / 2 ;
+
+  float t1 = pi4 ;
+  float t2 = tz - pi + t1 ;
+  float t3 = tx - t2 ;
 
   cout << endl ;
   cout << "Calculated Angles " << endl ; 
@@ -239,14 +269,16 @@ void placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   cout << "Z : " << tz << endl ;
 
   // Perform Rotation
-  Rotate(viewer,objectIndex,0,tyz) ;
-  Rotate(viewer,objectIndex,1,tzx) ;
-  Rotate(viewer,objectIndex,2,txy) ;
+  // Rotate(viewer,objectIndex,0,pi2-tyz) ;
+  Rotate(viewer,objectIndex,1,tx) ;
+  Rotate(viewer,objectIndex,2,tsz) ;
 
   // Perform Translation
   Mid = (P_1+P_2+P_3) / 3 ;
   translate(viewer,objectIndex,0,Mid.row(0)[0]) ;
   translate(viewer,objectIndex,1,Mid.row(0)[1]) ;
   translate(viewer,objectIndex,2,Mid.row(0)[2]) ;
+  cout << "Done Translations " << endl ;
 
+  return true ;
 }
