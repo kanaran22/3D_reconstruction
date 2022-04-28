@@ -50,10 +50,10 @@ int main(int argc, char *argv[])
   viewer.data(Selected_mesh).set_mesh(P, F);
   viewer.data(Selected_mesh).set_face_based(true);
 
-  // viewer.load_mesh_from_file("branchnew.off");
+  viewer.load_mesh_from_file("branchnew.off");
 
   int i ;
-  int numberOfStars = 0 ;
+  int numberOfStars = 20 ;
 
   for(i=0;i<numberOfStars;i+=1)
     viewer.load_mesh_from_file("star.off");
@@ -69,9 +69,10 @@ int main(int argc, char *argv[])
 
   for(i=0;i<numberOfStars;i+=1)
   {
-    while(placeObject(viewer,3+i,t+i))
+    while(!placeObject(viewer,3+i,t+i))
     {
       t += 1 ;
+      cout << "[+] Checking for face : " << t << endl ;
     };
   }
 
@@ -128,17 +129,17 @@ int main(int argc, char *argv[])
       scale(viewer,2,downscale) ;
 
     if (key == 'Y')
-      tempRotate(viewer,2,x_rot,d_theta) ;
+      Rotate(viewer,2,0,d_theta) ;
     if (key == 'U')
-      tempRotate(viewer,2,x_rot,-d_theta) ;
+      Rotate(viewer,2,0,-d_theta) ;
     if (key == 'H')
-      tempRotate(viewer,2,y_rot,d_theta) ;
+      Rotate(viewer,2,1,d_theta) ;
     if (key == 'J')
-      tempRotate(viewer,2,y_rot,-d_theta) ;
+      Rotate(viewer,2,1,-d_theta) ;
     if (key == 'N')
-      tempRotate(viewer,2,z_rot,d_theta) ;
+      Rotate(viewer,2,2,d_theta) ;
     if (key == 'M')
-      tempRotate(viewer,2,z_rot,-d_theta) ;
+      Rotate(viewer,2,2,-d_theta) ;
 
     if (key == '1')
     {

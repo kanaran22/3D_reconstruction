@@ -18,7 +18,7 @@ void tempRotate(igl::opengl::glfw::Viewer viewer,int objectIndex,RowVector3d v,d
   cout << "Temp Rotate" << endl ;
   cout << "v : " << v << endl ;
   cout << "theta : " << theta << endl ;
-  cout << "Q : " << q << endl ;
+  // cout << "Q : " << q << endl ;
   // cout << q << endl ;
   // cout << "V" << endl ;
   // cout << V ;
@@ -102,6 +102,9 @@ void Rotate(igl::opengl::glfw::Viewer &viewer,int objectIndex,int direction,floa
 {
   MatrixXd P = viewer.data(objectIndex).V;
   double theta = d_theta;
+  cout << endl ;
+  cout << "Rotate : " << direction << "\t" 
+        << "Angle : " << d_theta << endl ;
   switch(direction)
   {
     case 0 : for (int i = 0; i < P.rows(); ++i)
@@ -211,6 +214,11 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   MatrixXi Face ;
   MatrixXd P_1 , P_2 , P_3 , Mid ;
 
+  // Pi Values
+  float pi2 = acos(0.0);
+  float pi = pi2 * 2;
+  float pi4 = pi2 / 2 ;
+
   // Getting Points
   Face = viewer.data(1).F.row(faceIndex) ;
   P_1 = viewer.data(1).V.row(Face.row(0)[0]) ;
@@ -225,6 +233,8 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   float yb = P_3.row(0)[1] - P_1.row(0)[1];
   float zb = P_3.row(0)[2] - P_1.row(0)[2];
 
+  Mid = (P_1+P_2+P_3) / 3 ;
+
   float xcoff = ya*zb - za*yb ;
   float ycoff = za*xb - xa*zb;
   float zcoff = xa*yb - ya*xb ;
@@ -234,6 +244,22 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
     cout << "Returning False" <<endl ;
     return false ;
   }
+
+  float x2 = (xcoff * (-Mid(0,2)/zcoff)) + Mid(0,0) ;
+  float y2 = (ycoff * (-Mid(0,2)/zcoff)) + Mid(0,1) ;
+  float z2 = 0 ;
+
+  float x1 = Mid(0,0) ;
+  float y1 = Mid(0,1) ;
+  float z1 = Mid(0,1) ;
+
+  float ry = pow(x2-x1,2)+pow(y2-y1,2) ;
+  ry /= (pow(x2-x1,2)+pow(y2-y1,2)+pow(z2-z1,2)) ;
+  ry = sqrt(ry) ;
+  ry = pi2 - ry ;
+
+  float rz = abs(y2 - y1) ;
+  rz /= sqrt(pow(x2-x1,2)+pow(y2-y1,2)) ;
 
   float A = sqrt(pow(xcoff,2)+pow(ycoff,2)+pow(zcoff,2)) ;
 
@@ -254,10 +280,6 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   float tsz = ycoff / sqrt(pow(xcoff,2)+pow(ycoff,2)) ;
   tsz = asin(tsz) ;
 
-  float pi2 = acos(0.0);
-  float pi = pi2 * 2;
-  float pi4 = pi2 / 2 ;
-
   float t1 = pi4 ;
   float t2 = tz - pi + t1 ;
   float t3 = tx - t2 ;
@@ -269,12 +291,11 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   cout << "Z : " << tz << endl ;
 
   // Perform Rotation
-  // Rotate(viewer,objectIndex,0,pi2-tyz) ;
-  Rotate(viewer,objectIndex,1,tx) ;
-  Rotate(viewer,objectIndex,2,tsz) ;
+  Rotate(viewer,objectIndex,0,pi2) ;
+  Rotate(viewer,objectIndex,1,pi2-ry) ;
+  Rotate(viewer,objectIndex,2,-rz) ;
 
   // Perform Translation
-  Mid = (P_1+P_2+P_3) / 3 ;
   translate(viewer,objectIndex,0,Mid.row(0)[0]) ;
   translate(viewer,objectIndex,1,Mid.row(0)[1]) ;
   translate(viewer,objectIndex,2,Mid.row(0)[2]) ;
