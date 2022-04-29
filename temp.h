@@ -6,9 +6,13 @@
 #include <Eigen/Core>
 #include <typeinfo>
 #include <math.h>
+#include <time.h>
+#include <iostream>
 
 using namespace std ;
 using namespace Eigen ;
+
+float threshold = 0.1 ;
 
 void tempRotate(igl::opengl::glfw::Viewer viewer,int objectIndex,RowVector3d v,double theta)
 {
@@ -161,6 +165,13 @@ void Rotate(igl::opengl::glfw::Viewer &viewer,int objectIndex,int direction,floa
   viewer.data(objectIndex).set_face_based(true);
 }
 
+void newRotation(igl::opengl::glfw::Viewer &viewer,int objectIndex,int direction,float d_theta)
+{
+  MatrixXd P = viewer.data(objectIndex).V;
+  double theta = d_theta;
+
+}
+
 MatrixXi FConcat(MatrixXi F1,MatrixXi F2,int x = 10)
 {
   MatrixXi Temp(F2.rows(),F2.cols());
@@ -205,8 +216,11 @@ void saveMesh(igl::opengl::glfw::Viewer &viewer)
     Ft_2 = viewer.data(i).F ;
     Ft = FConcat(Ft_1,Ft_2,x) ;
   }
+  // cout << "[+] Writing : " << V << endl ;
+  // cout << "[+] F : " << F << endl ;
   igl::writeOFF("OUTPUT.off",Vt,Ft);
   igl::writeOBJ("OUTPUT.obj",Vt,Ft);
+  cout << "[+] Written to File" << endl ;
 }
 
 bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex) 
@@ -235,18 +249,31 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
 
   Mid = (P_1+P_2+P_3) / 3 ;
 
+  // if(Mid(0,1) > 1)
+  //   return false ;
+  float prob = (float) rand()/RAND_MAX ;
+  cout << endl ;
+  cout << "[+] Probablity : " << prob << endl ;
+  if(prob > threshold) 
+  {
+    cout << "[-] Greater than" ;
+    return false ;
+  }
+
   float xcoff = ya*zb - za*yb ;
   float ycoff = za*xb - xa*zb;
   float zcoff = xa*yb - ya*xb ;
   
-  if(!(xcoff>0&&ycoff>0&&zcoff>0))
-  {
-    cout << "Returning False" <<endl ;
-    return false ;
-  }
+  // if(!(xcoff>0&&ycoff>0&&zcoff>0))
+  // {
+  //   cout << "Returning False" <<endl ;
+  //   return false ;
+  // }
 
-  float x2 = (xcoff * (-Mid(0,2)/zcoff)) + Mid(0,0) ;
-  float y2 = (ycoff * (-Mid(0,2)/zcoff)) + Mid(0,1) ;
+  float A = sqrt(pow(xcoff,2)+pow(ycoff,2)+pow(zcoff,2)) ;
+
+  float x2 = ((xcoff/A) * (-Mid(0,2)/(zcoff/A))) + Mid(0,0) ;
+  float y2 = ((ycoff/A) * (-Mid(0,2)/(zcoff/A))) + Mid(0,1) ;
   float z2 = 0 ;
 
   float x1 = Mid(0,0) ;
@@ -260,8 +287,6 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
 
   float rz = abs(y2 - y1) ;
   rz /= sqrt(pow(x2-x1,2)+pow(y2-y1,2)) ;
-
-  float A = sqrt(pow(xcoff,2)+pow(ycoff,2)+pow(zcoff,2)) ;
 
   float tx = xcoff / A ;
   tx = acos(tx);
@@ -284,16 +309,29 @@ bool placeObject(igl::opengl::glfw::Viewer &viewer,int objectIndex,int faceIndex
   float t2 = tz - pi + t1 ;
   float t3 = tx - t2 ;
 
+  float nry = xcoff / sqrt(pow(xcoff,2)+pow(zcoff,2)) ;
+  nry = pi2 - acos(nry) ;
+
+  float nrz = sqrt(pow(xcoff,2)+pow(zcoff,2)) / A ;
+  nrz = acos(nrz) ;
+
   cout << endl ;
   cout << "Calculated Angles " << endl ; 
   cout << "X : " << tx << endl ;
   cout << "Y : " << ty << endl ;
   cout << "Z : " << tz << endl ;
+  cout << "XY : " << txy << endl ;
+  cout << "YZ : " << tyz << endl ;
+  cout << "Zx : " << tzx << endl ;
 
   // Perform Rotation
+  // Rotate(viewer,objectIndex,0,tyz) ;
+  // Rotate(viewer,objectIndex,1,tzx) ;
+  // Rotate(viewer,objectIndex,2,txy) ;
+  
   Rotate(viewer,objectIndex,0,pi2) ;
-  Rotate(viewer,objectIndex,1,pi2-ry) ;
-  Rotate(viewer,objectIndex,2,-rz) ;
+  Rotate(viewer,objectIndex,1,nry) ;
+  Rotate(viewer,objectIndex,2,nrz) ;
 
   // Perform Translation
   translate(viewer,objectIndex,0,Mid.row(0)[0]) ;
